@@ -23,6 +23,7 @@ export default function App() {
       <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
       <Route path="/contestants" element={<PublicLayout><Contestants /></PublicLayout>} />
       <Route path="/contestants/:contestantId" element={<PublicLayout><ContestantProfile /></PublicLayout>} />
+      <Route path="/vote" element={<PublicLayout><Vote /></PublicLayout>} />
       <Route path="/vote/:contestantId" element={<PublicLayout><Vote /></PublicLayout>} />
       <Route path="/vote-confirmed" element={<PublicLayout><VoteConfirmed /></PublicLayout>} />
       <Route path="/results" element={<PublicLayout><Results /></PublicLayout>} />

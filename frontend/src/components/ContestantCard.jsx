@@ -27,7 +27,7 @@ export default function ContestantCard({ contestant }) {
             View Profile
           </Link>
           <Link to={`/vote/${contestant.contestantId}`} className="btn btn--primary">
-            Vote
+            Add to Ballot
           </Link>
         </div>
       </div>

@@ -346,6 +346,60 @@
   font-size: inherit;
 }
 
+/* ---------- Combined ballot ---------- */
+.ballot-grid {
+  margin-bottom: var(--sp-2);
+}
+.ballot-tile {
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+  border: 2px solid transparent;
+}
+.ballot-tile:hover {
+  transform: translateY(-2px);
+}
+.ballot-tile:focus-visible {
+  border-color: var(--brand-blue);
+}
+.ballot-tile--selected {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 1px var(--brand-blue);
+}
+.ballot-tile .contestant-card__photo {
+  position: relative;
+}
+.ballot-tile__check {
+  position: absolute;
+  top: var(--sp-1);
+  right: var(--sp-1);
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-blue);
+  color: #fff;
+  border-radius: 50%;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.ballot-tile__profile-link {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+.ballot-submit {
+  padding: var(--sp-3);
+  max-width: 480px;
+  margin: var(--sp-4) auto 0;
+  text-align: center;
+}
+.ballot-submit__account {
+  margin-bottom: var(--sp-2);
+}
+
 /* ---------- Confirmation ---------- */
 .confirmation-card {
   max-width: 520px;

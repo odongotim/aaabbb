@@ -4,24 +4,38 @@ import { Link, Navigate, useLocation } from 'react-router-dom';
 export default function VoteConfirmed() {
   const { state } = useLocation();
 
-  if (!state) {
+  if (!state || !state.votes || state.votes.length === 0) {
     return <Navigate to="/" replace />;
   }
 
   return (
     <div className="container page-section">
       <div className="card confirmation-card">
-        <p className="badge badge--open">Vote Successfully Recorded</p>
+        <p className="badge badge--open">Vote{state.votes.length > 1 ? 's' : ''} Successfully Recorded</p>
         <h1>Thank you for voting</h1>
+
+        {state.votes.map((vote) => (
+          <dl className="confirmation-list" key={vote.voteReference}>
+            <div>
+              <dt>Category</dt>
+              <dd>{vote.category}</dd>
+            </div>
+            <div>
+              <dt>Contestant</dt>
+              <dd>{vote.contestantName}</dd>
+            </div>
+            <div>
+              <dt>Contestant Number</dt>
+              <dd>{vote.contestantNumber}</dd>
+            </div>
+            <div>
+              <dt>Vote Reference</dt>
+              <dd>{vote.voteReference}</dd>
+            </div>
+          </dl>
+        ))}
+
         <dl className="confirmation-list">
-          <div>
-            <dt>Contestant</dt>
-            <dd>{state.contestantName}</dd>
-          </div>
-          <div>
-            <dt>Contestant Number</dt>
-            <dd>{state.contestantNumber}</dd>
-          </div>
           <div>
             <dt>Voting Day</dt>
             <dd>Day {state.votingDayNumber} ({state.votingDay})</dd>
@@ -30,13 +44,10 @@ export default function VoteConfirmed() {
             <dt>Time</dt>
             <dd>{new Date(state.timestamp).toLocaleString('en-GB', { timeZone: 'Africa/Kampala' })} EAT</dd>
           </div>
-          <div>
-            <dt>Vote Reference</dt>
-            <dd>{state.voteReference}</dd>
-          </div>
         </dl>
+
         <p className="confirmation-card__note">
-          You may still vote in the other category today if you haven't already. This category's vote resets
+          You may still vote in the other category today if you haven't already. Each category's vote resets
           after midnight, East Africa Time.
         </p>
         <div className="hero__actions">

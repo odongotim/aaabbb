@@ -126,6 +126,126 @@ function submitVote_(params) {
 }
 
 /**
+ * Submits a Female and/or Male vote in a single call. Expects:
+ *   idToken             - Google Sign-In ID token (verified server side)
+ *   femaleContestantId  - optional; omit if that category was already voted
+ *   maleContestantId    - optional; omit if that category was already voted
+ *   deviceHash          - hashed client device identifier (see Security.gs)
+ * At least one of femaleContestantId/maleContestantId is required. This is
+ * the combined "pick one of each, submit once" flow: identity is verified
+ * once and both votes are recorded in a single lock, instead of two
+ * separate round trips through submitVote_.
+ * Returns { votingDay, votingDayNumber, timestamp, votes: [...] }.
+ */
+function submitVotes_(params) {
+  var identity = verifyGoogleIdToken_(params.idToken);
+  var email = identity.email;
+  var emailHash = sha256Hex_(email);
+  var deviceHash = params.deviceHash ? String(params.deviceHash).substring(0, 128) : '';
+
+  enforceRateLimit_('vote_' + emailHash, RATE_LIMIT.MAX_REQUESTS_PER_MINUTE_PER_KEY);
+  checkDeviceFanout_(deviceHash, emailHash);
+
+  var femaleContestantId = String(params.femaleContestantId || '').trim();
+  var maleContestantId = String(params.maleContestantId || '').trim();
+  if (!femaleContestantId && !maleContestantId) {
+    throw new AppError_('INVALID_REQUEST', 'Select at least one contestant to vote for.');
+  }
+
+  var votingState = getVotingStatus_();
+  if (votingState.status === VOTING_STATUS.NOT_STARTED) {
+    throw new AppError_('VOTING_NOT_STARTED', 'Voting has not started yet.');
+  }
+  if (votingState.status === VOTING_STATUS.CLOSED) {
+    throw new AppError_('VOTING_CLOSED', 'Voting has closed.');
+  }
+
+  var picks = [];
+  if (femaleContestantId) picks.push({ contestantId: femaleContestantId, expectedCategory: 'Female' });
+  if (maleContestantId) picks.push({ contestantId: maleContestantId, expectedCategory: 'Male' });
+
+  var contestants = picks.map(function (pick) {
+    var contestant = findContestantById_(pick.contestantId);
+    if (!contestant) {
+      throw new AppError_('CONTESTANT_NOT_FOUND', 'Contestant unavailable.');
+    }
+    if (String(contestant.status).toLowerCase() !== 'active') {
+      throw new AppError_('CONTESTANT_UNAVAILABLE', 'Contestant unavailable.');
+    }
+    if (contestant.category !== pick.expectedCategory) {
+      throw new AppError_('INVALID_REQUEST', 'Invalid request.');
+    }
+    return contestant;
+  });
+
+  // Everything below must happen atomically to prevent race conditions
+  // where two simultaneous requests both get recorded for the same voter.
+  return withLock_(function () {
+    var votingDayKey = currentVotingDayKey_();
+    var votesSheet = getSheet_(SHEET_NAMES.VOTES);
+    var existing = readSheetAsObjects_(votesSheet);
+
+    var alreadyVotedCategories = {};
+    for (var i = 0; i < existing.length; i++) {
+      var v = existing[i];
+      if (v.email_hash === emailHash && v.voting_day === votingDayKey && v.status === 'valid') {
+        alreadyVotedCategories[v.category] = true;
+      }
+    }
+    for (var j = 0; j < contestants.length; j++) {
+      if (alreadyVotedCategories[contestants[j].category]) {
+        trackFailedVoteAttempt_(emailHash, deviceHash, 'ALREADY_VOTED');
+        throw new AppError_('ALREADY_VOTED', 'You have already voted in the ' + contestants[j].category + ' category today. Come back after midnight to vote again.');
+      }
+    }
+
+    var voter = findOrCreateVoter_(email, deviceHash);
+    var votersSheet = getSheet_(SHEET_NAMES.VOTERS);
+    var voterHeaders = getHeaders_(votersSheet);
+    var timestamp = nowIso_();
+    var votingDayNumber = currentVotingDayNumber_(votingState.start, votingState.now);
+
+    var results = contestants.map(function (contestant) {
+      var voteId = newId_('vote');
+      var record = {
+        vote_id: voteId,
+        voter_id: voter.voter_id,
+        email_hash: emailHash,
+        contestant_id: contestant.contestant_id,
+        contestant_name: contestant.name,
+        category: contestant.category,
+        voting_day: votingDayKey,
+        timestamp: timestamp,
+        device_hash: deviceHash,
+        status: 'valid'
+      };
+      appendRowFromObject_(votesSheet, getHeaders_(votesSheet), record);
+      updateDailyResultsForVote_(votingDayKey, contestant);
+
+      return {
+        voteReference: voteId,
+        contestantId: contestant.contestant_id,
+        contestantName: contestant.name,
+        contestantNumber: contestant.contestant_number,
+        category: contestant.category
+      };
+    });
+
+    votersSheet.getRange(voter.__row, voterHeaders.indexOf('last_vote_date') + 1).setValue(votingDayKey);
+    if (deviceHash) {
+      votersSheet.getRange(voter.__row, voterHeaders.indexOf('device_hash') + 1).setValue(deviceHash);
+    }
+
+    return {
+      votingDay: votingDayKey,
+      votingDayNumber: votingDayNumber,
+      timestamp: timestamp,
+      votes: results
+    };
+  });
+}
+
+/**
  * Whether the currently authenticated voter has already voted today, broken
  * down per category — since a voter may cast one vote for the Female
  * category and a separate vote for the Male category on the same day.

@@ -50,7 +50,7 @@ export default function ContestantProfile() {
           <p className="profile__category">{contestant.category}</p>
           <p className="profile__bio">{contestant.biography}</p>
           <Link to={`/vote/${contestant.contestantId}`} className="btn btn--primary">
-            Vote for {contestant.name}
+            Add {contestant.name} to Ballot
           </Link>
         </div>
       </div>
