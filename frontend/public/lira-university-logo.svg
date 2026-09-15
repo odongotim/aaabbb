@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Placeholder — replace with official Lira University logo">
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#000000" stroke-width="4"/>
+  <text x="100" y="95" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#000000">LIRA</text>
+  <text x="100" y="118" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#000000">UNIVERSITY</text>
+  <text x="100" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666666">REPLACE WITH OFFICIAL LOGO</text>
+</svg>

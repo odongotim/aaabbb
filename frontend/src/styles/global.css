@@ -1,0 +1,163 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 var(--sp-2) 0;
+  color: var(--ink);
+}
+
+p {
+  margin: 0 0 var(--sp-2) 0;
+  max-width: 68ch;
+}
+
+a {
+  color: var(--brand-blue);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--sp-3);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 var(--sp-2);
+  }
+}
+
+/* Official three-band colour stripe — solid bands only, no gradients. */
+.stripe {
+  display: flex;
+  width: 100%;
+  height: 6px;
+}
+.stripe__band {
+  flex: 1;
+}
+.stripe__band--outer { background: var(--brand-blue); }
+.stripe__band--middle { background: var(--brand-yellow); }
+.stripe__band--inner { background: var(--brand-black); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.btn--primary {
+  background: var(--brand-blue);
+  color: #fff;
+}
+.btn--primary:hover:not(:disabled) {
+  background: #0052CC;
+}
+.btn--secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.btn--secondary:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.btn--block {
+  width: 100%;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 2px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge--open { background: var(--status-open-bg); color: var(--status-open); }
+.badge--closed { background: var(--status-closed-bg); color: var(--status-closed); }
+.badge--pending { background: var(--status-pending-bg); color: var(--status-pending); }
+
+.field {
+  margin-bottom: var(--sp-3);
+}
+.field label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

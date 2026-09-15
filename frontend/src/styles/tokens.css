@@ -1,0 +1,61 @@
+/*
+  Design tokens for the Lira University Pageantry voting platform.
+
+  Palette is anchored to the official stripe (blue / yellow / black) used
+  sparingly as a controlled accent, set against warm paper-white neutrals
+  rather than pure white/grey, so the interface reads as an institutional
+  publication rather than a generic SaaS dashboard.
+
+  Type: Fraunces (a serif with real editorial weight) for headings and
+  identity marks; Source Sans 3 for all interface and body text.
+*/
+
+:root {
+  /* University brand */
+  --brand-blue: #0066FF;
+  --brand-yellow: #FFEE00;
+  --brand-black: #000000;
+
+  /* Neutrals */
+  --paper: #FBFAF7;
+  --surface: #FFFFFF;
+  --ink: #14140F;
+  --ink-soft: #4A4A42;
+  --ink-faint: #86867A;
+  --line: #E4E2D8;
+  --line-strong: #C9C6B6;
+
+  /* Status */
+  --status-open: #0A7A3C;
+  --status-open-bg: #EAF6EE;
+  --status-closed: #8A1F1F;
+  --status-closed-bg: #FBEAEA;
+  --status-pending: #8A6A00;
+  --status-pending-bg: #FBF3D9;
+
+  /* Type */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+  --text-4xl: 3.5rem;
+
+  /* Spacing (8px baseline) */
+  --sp-1: 0.5rem;
+  --sp-2: 1rem;
+  --sp-3: 1.5rem;
+  --sp-4: 2rem;
+  --sp-5: 3rem;
+  --sp-6: 4rem;
+  --sp-7: 6rem;
+
+  --radius: 3px;
+  --max-width: 1120px;
+  --shadow-card: 0 1px 2px rgba(20, 20, 15, 0.06);
+}
