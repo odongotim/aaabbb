@@ -27,33 +27,32 @@ export function AuthProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idToken]);
 
-  useEffect(() => {
-    const check = setInterval(() => {
-      if (window.google?.accounts?.id) {
-        setGsiReady(true);
-        clearInterval(check);
-      }
-    }, 200);
-    return () => clearInterval(check);
-  }, []);
-
   const handleCredential = useCallback((response) => {
     sessionStorage.setItem(STORAGE_KEY, response.credential);
     setIdToken(response.credential);
   }, []);
 
-  const initGsi = useCallback(() => {
-    if (!window.google?.accounts?.id || !CLIENT_ID || CLIENT_ID.includes('YOUR_GOOGLE')) return;
-    window.google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: handleCredential,
-      auto_select: false
-    });
-  }, [handleCredential]);
-
+  // Initialize must complete before any renderButton() call, and child
+  // components' effects can fire before this provider's effects on mount —
+  // so initialize() happens synchronously the moment the script is
+  // detected, in the same tick that flips gsiReady, rather than in a
+  // second effect that races against consumers of gsiReady.
   useEffect(() => {
-    if (gsiReady) initGsi();
-  }, [gsiReady, initGsi]);
+    const check = setInterval(() => {
+      if (window.google?.accounts?.id) {
+        clearInterval(check);
+        if (CLIENT_ID && !CLIENT_ID.includes('YOUR_GOOGLE')) {
+          window.google.accounts.id.initialize({
+            client_id: CLIENT_ID,
+            callback: handleCredential,
+            auto_select: false
+          });
+        }
+        setGsiReady(true);
+      }
+    }, 200);
+    return () => clearInterval(check);
+  }, [handleCredential]);
 
   const renderSignInButton = useCallback((el, options = {}) => {
     if (!window.google?.accounts?.id || !el) return;
