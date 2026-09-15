@@ -8,7 +8,7 @@ export default function Header() {
       <div className="container site-header__row">
         <Link to="/" className="site-header__brand">
           <img
-            src="/lira-university-logo.svg"
+            src="/lira-university-logo.png"
             alt="Lira University official logo"
             className="site-header__logo"
           />

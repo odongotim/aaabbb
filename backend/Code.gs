@@ -19,7 +19,7 @@ var ALLOWED_ACTIONS = {
 
   // Voting (requires Google ID token)
   submitVote: function (p) { return submitVote_(p); },
-  checkVoterStatus: function (p) { return checkVoterStatus_(p.idToken); },
+  checkVoterStatus: function (p) { return checkVoterStatus_(p.idToken, p.category); },
 
   // Admin — overview & control
   adminOverview: function (p) { return adminOverview_(p.idToken); },

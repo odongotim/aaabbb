@@ -28,12 +28,12 @@ export default function Vote() {
   }, [contestantId]);
 
   useEffect(() => {
-    if (isSignedIn && idToken) {
-      api.checkVoterStatus(idToken).then(setVoteStatus).catch(() => {});
+    if (isSignedIn && idToken && contestant) {
+      api.checkVoterStatus(idToken, contestant.category).then(setVoteStatus).catch(() => {});
     } else {
       setVoteStatus(null);
     }
-  }, [isSignedIn, idToken]);
+  }, [isSignedIn, idToken, contestant]);
 
   async function handleVote() {
     setSubmitError(null);
@@ -104,8 +104,9 @@ export default function Vote() {
         )}
 
         {isSignedIn && voteStatus?.votedToday && (
-          <ErrorMessage title="You have already voted today" tone="info">
-            You voted for {voteStatus.votedFor} today. You may vote again after midnight, East Africa Time.
+          <ErrorMessage title={`You have already voted in the ${contestant.category} category today`} tone="info">
+            You voted for {voteStatus.votedFor} today. You may still vote in the other category if you haven't
+            already, or come back after midnight, East Africa Time, to vote in this category again.
           </ErrorMessage>
         )}
 

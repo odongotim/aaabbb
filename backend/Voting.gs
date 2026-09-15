@@ -82,9 +82,9 @@ function submitVote_(params) {
 
     for (var i = 0; i < existing.length; i++) {
       var v = existing[i];
-      if (v.email_hash === emailHash && v.voting_day === votingDayKey && v.status === 'valid') {
+      if (v.email_hash === emailHash && v.voting_day === votingDayKey && v.category === contestant.category && v.status === 'valid') {
         trackFailedVoteAttempt_(emailHash, deviceHash, 'ALREADY_VOTED');
-        throw new AppError_('ALREADY_VOTED', 'You have already voted today. Come back after midnight to vote again.');
+        throw new AppError_('ALREADY_VOTED', 'You have already voted in the ' + contestant.category + ' category today. Come back after midnight to vote again.');
       }
     }
 
@@ -125,23 +125,41 @@ function submitVote_(params) {
   });
 }
 
-/** Whether the currently authenticated voter has already voted today. */
-function checkVoterStatus_(idToken) {
+/**
+ * Whether the currently authenticated voter has already voted today, broken
+ * down per category — since a voter may cast one vote for the Female
+ * category and a separate vote for the Male category on the same day.
+ * If `category` is passed, also returns top-level votedToday/votedFor for
+ * that specific category (convenient for the voting page).
+ */
+function checkVoterStatus_(idToken, category) {
   var identity = verifyGoogleIdToken_(idToken);
   var emailHash = sha256Hex_(identity.email);
   var votingDayKey = currentVotingDayKey_();
   var votesSheet = getSheet_(SHEET_NAMES.VOTES);
   var rows = readSheetAsObjects_(votesSheet);
-  var votedToday = false;
-  var votedFor = null;
+
+  var votedCategories = {};
   for (var i = 0; i < rows.length; i++) {
-    if (rows[i].email_hash === emailHash && rows[i].voting_day === votingDayKey && rows[i].status === 'valid') {
-      votedToday = true;
-      votedFor = rows[i].contestant_name;
-      break;
+    var v = rows[i];
+    if (v.email_hash === emailHash && v.voting_day === votingDayKey && v.status === 'valid') {
+      votedCategories[v.category] = { voted: true, votedFor: v.contestant_name };
     }
   }
-  return { email: identity.email, votedToday: votedToday, votedFor: votedFor, votingDay: votingDayKey };
+
+  var result = {
+    email: identity.email,
+    votingDay: votingDayKey,
+    votedCategories: votedCategories
+  };
+
+  if (category) {
+    var entry = votedCategories[category];
+    result.votedToday = !!entry;
+    result.votedFor = entry ? entry.votedFor : null;
+  }
+
+  return result;
 }
 
 /** Incrementally maintains the DailyResults sheet so it never needs a full rescan for the public/admin summary. */

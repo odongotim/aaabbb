@@ -36,7 +36,8 @@ export default function VoteConfirmed() {
           </div>
         </dl>
         <p className="confirmation-card__note">
-          You may vote again after midnight, East Africa Time.
+          You may still vote in the other category today if you haven't already. This category's vote resets
+          after midnight, East Africa Time.
         </p>
         <div className="hero__actions">
           <Link to="/contestants" className="btn btn--secondary">Back to Contestants</Link>

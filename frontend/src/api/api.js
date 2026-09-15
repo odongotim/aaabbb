@@ -56,7 +56,7 @@ export const api = {
 
   submitVote: (idToken, contestantId, deviceHash) =>
     call('submitVote', { idToken, contestantId, deviceHash }),
-  checkVoterStatus: (idToken) => call('checkVoterStatus', { idToken }),
+  checkVoterStatus: (idToken, category) => call('checkVoterStatus', { idToken, category }),
 
   adminWhoAmI: (idToken) => call('adminWhoAmI', { idToken }),
   adminOverview: (idToken) => call('adminOverview', { idToken }),
