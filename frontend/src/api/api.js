@@ -48,9 +48,31 @@ async function call(action, payload = {}) {
   return json.data;
 }
 
+const PUBLIC_BOOTSTRAP_CACHE_KEY = 'lu_pageantry_public_bootstrap';
+const PUBLIC_BOOTSTRAP_CACHE_MS = 60 * 1000;
+
+async function getPublicBootstrapCached() {
+  try {
+    const raw = sessionStorage.getItem(PUBLIC_BOOTSTRAP_CACHE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.savedAt && Date.now() - parsed.savedAt < PUBLIC_BOOTSTRAP_CACHE_MS && parsed.data) {
+        return parsed.data;
+      }
+    }
+  } catch (_) {}
+
+  const data = await call('getPublicBootstrap');
+  try {
+    sessionStorage.setItem(PUBLIC_BOOTSTRAP_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data }));
+  } catch (_) {}
+  return data;
+}
+
 export const api = {
   getPublicSettings: () => call('getPublicSettings'),
   getActiveContestants: () => call('getActiveContestants'),
+  getPublicBootstrap: getPublicBootstrapCached,
   getContestantDetails: (contestantId) => call('getContestantDetails', { contestantId }),
   getPublicFinalResults: () => call('getPublicFinalResults'),
 

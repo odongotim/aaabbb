@@ -47,7 +47,7 @@ export default function VoteConfirmed() {
         </dl>
 
         <p className="confirmation-card__note">
-          You may still vote again tomorrow. Each category's vote resets
+          You may still vote in the other category today if you haven't already. Each category's vote resets
           after midnight, East Africa Time.
         </p>
         <div className="hero__actions">

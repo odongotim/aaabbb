@@ -8,8 +8,8 @@ export default function Contestants() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.getActiveContestants()
-      .then(setContestants)
+    api.getPublicBootstrap()
+      .then(({ contestants }) => setContestants(contestants))
       .catch((e) => setError(e instanceof ApiError ? e.message : 'System temporarily unavailable.'));
   }, []);
 
@@ -37,8 +37,8 @@ export default function Contestants() {
       <h1>Contestants</h1>
       <p className="page-intro">Browse this year's contestants and cast your vote.</p>
 
-      <CategorySection title="Miss Lira University" contestants={female} />
-      <CategorySection title="Mr.Lira University" contestants={male} />
+      <CategorySection title="Female" contestants={female} />
+      <CategorySection title="Male" contestants={male} />
     </div>
   );
 }

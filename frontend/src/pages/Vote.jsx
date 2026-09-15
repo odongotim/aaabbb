@@ -25,11 +25,11 @@ export default function Vote() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
-  // Contestant list + voting window status load immediately and in
-  // parallel — no sign-in required to browse and pick, only to submit.
+  // Contestants and public settings arrive in one cached request.
+  // No sign-in is required to browse and pick, only to submit.
   useEffect(() => {
-    Promise.all([api.getActiveContestants(), api.getPublicSettings()])
-      .then(([c, s]) => {
+    api.getPublicBootstrap()
+      .then(({ contestants: c, settings: s }) => {
         setContestants(c);
         setSettings(s);
       })
