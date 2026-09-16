@@ -65,8 +65,13 @@ export default function Vote() {
     return grouped;
   }, [contestants]);
 
-  const pendingCategories = CATEGORIES.filter((cat) => !votedCategories[cat]?.voted && selections[cat]);
-  const canSubmit = isSignedIn && pendingCategories.length > 0 && !submitting;
+  // Categories the voter hasn't already voted in today. Every one of
+  // these must have a selection before the ballot can be submitted —
+  // you can no longer submit with only one category picked while the
+  // other is left blank.
+  const openCategories = CATEGORIES.filter((cat) => !votedCategories[cat]?.voted);
+  const missingCategories = openCategories.filter((cat) => !selections[cat]);
+  const canSubmit = isSignedIn && openCategories.length > 0 && missingCategories.length === 0 && !submitting;
 
   function selectContestant(category, contestantId) {
     if (votedCategories[category]?.voted) return;
@@ -79,8 +84,8 @@ export default function Vote() {
     try {
       const deviceHash = await getDeviceHash();
       const picks = {
-        femaleContestantId: pendingCategories.includes('Female') ? selections.Female : undefined,
-        maleContestantId: pendingCategories.includes('Male') ? selections.Male : undefined
+        femaleContestantId: votedCategories.Female?.voted ? undefined : selections.Female,
+        maleContestantId: votedCategories.Male?.voted ? undefined : selections.Male
       };
       const result = await api.submitVotes(idToken, picks, deviceHash);
       navigate('/vote-confirmed', { state: result });
@@ -134,7 +139,7 @@ export default function Vote() {
   return (
     <div className="container page-section vote-page">
       <h1>Cast Your Ballot</h1>
-      <p className="page-intro">Pick one Female contestant and one Male contestant, then submit both votes at once.</p>
+      <p className="page-intro">Pick one Female contestant and one Male contestant — both are required to submit your ballot.</p>
 
       {bothAlreadyVoted ? (
         <ErrorMessage title="You've already voted today in both categories" tone="info">
@@ -169,6 +174,12 @@ export default function Vote() {
             )}
 
             {submitError && <ErrorMessage title="Vote not recorded">{submitError.message}</ErrorMessage>}
+
+            {isSignedIn && missingCategories.length > 0 && (
+              <p className="ballot-submit__hint">
+                Select a contestant in {missingCategories.join(' and ')} to continue.
+              </p>
+            )}
 
             <button className="btn btn--primary btn--block" onClick={handleSubmit} disabled={!canSubmit}>
               {submitting ? 'Recording your votes…' : 'Submit My Votes'}

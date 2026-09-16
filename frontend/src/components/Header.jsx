@@ -20,6 +20,7 @@ export default function Header() {
         <nav className="site-header__nav" aria-label="Main navigation">
           <NavLink to="/" end>Home</NavLink>
           <NavLink to="/contestants">Contestants</NavLink>
+          <NavLink to="/today">Today's Votes</NavLink>
           <NavLink to="/results">Results</NavLink>
         </nav>
       </div>

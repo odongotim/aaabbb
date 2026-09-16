@@ -10,6 +10,7 @@ import ContestantProfile from './pages/ContestantProfile.jsx';
 import Vote from './pages/Vote.jsx';
 import VoteConfirmed from './pages/VoteConfirmed.jsx';
 import Results from './pages/Results.jsx';
+import TodayResults from './pages/TodayResults.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 import AdminLogin from './pages/admin/AdminLogin.jsx';
@@ -26,6 +27,7 @@ export default function App() {
       <Route path="/vote" element={<PublicLayout><Vote /></PublicLayout>} />
       <Route path="/vote/:contestantId" element={<PublicLayout><Vote /></PublicLayout>} />
       <Route path="/vote-confirmed" element={<PublicLayout><VoteConfirmed /></PublicLayout>} />
+      <Route path="/today" element={<PublicLayout><TodayResults /></PublicLayout>} />
       <Route path="/results" element={<PublicLayout><Results /></PublicLayout>} />
       <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
     </Routes>

@@ -47,6 +47,7 @@ export const api = {
   getActiveContestants: () => rpc('get_active_contestants'),
   getContestantDetails: (contestantId) => rpc('get_contestant_details', { p_contestant_id: contestantId }),
   getPublicFinalResults: () => rpc('get_public_final_results'),
+  getPublicDailyResults: () => rpc('get_public_daily_results'),
 
   submitVote: (_idToken, contestantId, deviceHash) =>
     rpc('submit_vote', { p_contestant_id: contestantId, p_device_hash: deviceHash || '' }),

@@ -27,6 +27,11 @@ export default function DailyResults() {
 
   if (error) return <ErrorMessage title="Unable to load daily results">{error}</ErrorMessage>;
 
+  const byCategory = { Female: [], Male: [] };
+  (results?.results || []).forEach((r) => {
+    if (byCategory[r.category]) byCategory[r.category].push(r);
+  });
+
   return (
     <div>
       <h1>Today's Votes &amp; Daily Results</h1>
@@ -67,8 +72,12 @@ export default function DailyResults() {
             </table>
           </div>
           <div className="card">
-            <h2>Distribution</h2>
-            <PieChart data={results.results.map((r) => ({ label: r.contestantName, value: r.voteCount }))} />
+            <h2>Female Distribution</h2>
+            <PieChart data={byCategory.Female.map((r) => ({ label: r.contestantName, value: r.voteCount }))} />
+          </div>
+          <div className="card">
+            <h2>Male Distribution</h2>
+            <PieChart data={byCategory.Male.map((r) => ({ label: r.contestantName, value: r.voteCount }))} />
           </div>
         </div>
       )}
