@@ -1,16 +1,17 @@
 /**
  * api.js
- * Thin client for the Google Apps Script backend. Every call is a POST
- * with a JSON body { action, payload }; the backend is the sole authority
- * on validation, so this layer does no business logic of its own.
+ * Thin client for the Supabase backend. Every call is a Postgres RPC
+ * function (see supabase/migrations/0001_init.sql); the backend is the
+ * sole authority on validation, so this layer does no business logic
+ * of its own.
  *
- * Content-Type is deliberately "text/plain" rather than "application/json"
- * — Apps Script web apps do not support CORS preflight (OPTIONS), so a
- * "simple request" content type avoids the browser sending a preflight
- * that Apps Script cannot answer.
+ * Function signatures intentionally keep an unused `idToken`-shaped first
+ * argument in the voting/admin calls, matching the previous Apps Script
+ * client — Supabase attaches the signed-in user's session to every RPC
+ * call automatically, so the page components that call these functions
+ * did not need to change.
  */
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { supabase, supabaseConfigured } from '../lib/supabaseClient.js';
 
 class ApiError extends Error {
   constructor(code, message) {
@@ -19,88 +20,77 @@ class ApiError extends Error {
   }
 }
 
-async function call(action, payload = {}) {
-  if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
-    throw new ApiError('NOT_CONFIGURED', 'The voting platform is not yet connected to its backend. Please contact the site administrator.');
+// Postgres functions raise errors as "CODE: human message" so the client
+// can recover the same { code, message } shape the old Apps Script JSON
+// error envelope provided.
+function toApiError(error) {
+  const raw = (error && error.message) || 'Something went wrong.';
+  const match = raw.match(/^([A-Z_]+):\s*(.*)$/s);
+  if (match) return new ApiError(match[1], match[2]);
+  if (/fetch|network/i.test(raw)) {
+    return new ApiError('NETWORK_ERROR', 'Network error. Please check your connection and try again.');
   }
-
-  let response;
-  try {
-    response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, payload })
-    });
-  } catch (e) {
-    throw new ApiError('NETWORK_ERROR', 'Network error. Please check your connection and try again.');
-  }
-
-  let json;
-  try {
-    json = await response.json();
-  } catch (e) {
-    throw new ApiError('INTERNAL_ERROR', 'System temporarily unavailable. Please try again shortly.');
-  }
-
-  if (!json.success) {
-    throw new ApiError(json.error?.code || 'UNKNOWN', json.error?.message || 'Something went wrong.');
-  }
-  return json.data;
+  return new ApiError('INTERNAL_ERROR', 'System temporarily unavailable. Please try again shortly.');
 }
 
-const PUBLIC_BOOTSTRAP_CACHE_KEY = 'lu_pageantry_public_bootstrap';
-const PUBLIC_BOOTSTRAP_CACHE_MS = 60 * 1000;
-
-async function getPublicBootstrapCached() {
-  try {
-    const raw = sessionStorage.getItem(PUBLIC_BOOTSTRAP_CACHE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed.savedAt && Date.now() - parsed.savedAt < PUBLIC_BOOTSTRAP_CACHE_MS && parsed.data) {
-        return parsed.data;
-      }
-    }
-  } catch (_) {}
-
-  const data = await call('getPublicBootstrap');
-  try {
-    sessionStorage.setItem(PUBLIC_BOOTSTRAP_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data }));
-  } catch (_) {}
+async function rpc(fn, params = {}) {
+  if (!supabaseConfigured) {
+    throw new ApiError('NOT_CONFIGURED', 'The voting platform is not yet connected to its backend. Please contact the site administrator.');
+  }
+  const { data, error } = await supabase.rpc(fn, params);
+  if (error) throw toApiError(error);
   return data;
 }
 
 export const api = {
-  getPublicSettings: () => call('getPublicSettings'),
-  getActiveContestants: () => call('getActiveContestants'),
-  getPublicBootstrap: getPublicBootstrapCached,
-  getContestantDetails: (contestantId) => call('getContestantDetails', { contestantId }),
-  getPublicFinalResults: () => call('getPublicFinalResults'),
+  getPublicSettings: () => rpc('get_public_settings'),
+  getActiveContestants: () => rpc('get_active_contestants'),
+  getContestantDetails: (contestantId) => rpc('get_contestant_details', { p_contestant_id: contestantId }),
+  getPublicFinalResults: () => rpc('get_public_final_results'),
 
-  submitVote: (idToken, contestantId, deviceHash) =>
-    call('submitVote', { idToken, contestantId, deviceHash }),
-  submitVotes: (idToken, { femaleContestantId, maleContestantId }, deviceHash) =>
-    call('submitVotes', { idToken, femaleContestantId, maleContestantId, deviceHash }),
-  checkVoterStatus: (idToken, category) => call('checkVoterStatus', { idToken, category }),
+  submitVote: (_idToken, contestantId, deviceHash) =>
+    rpc('submit_vote', { p_contestant_id: contestantId, p_device_hash: deviceHash || '' }),
+  submitVotes: (_idToken, { femaleContestantId, maleContestantId }, deviceHash) =>
+    rpc('submit_votes', {
+      p_female_contestant_id: femaleContestantId || null,
+      p_male_contestant_id: maleContestantId || null,
+      p_device_hash: deviceHash || ''
+    }),
+  checkVoterStatus: (_idToken, category) => rpc('check_voter_status', { p_category: category || null }),
 
-  adminWhoAmI: (idToken) => call('adminWhoAmI', { idToken }),
-  adminOverview: (idToken) => call('adminOverview', { idToken }),
-  adminUpdateVotingControl: (idToken, data) => call('adminUpdateVotingControl', { idToken, ...data }),
-  adminUpdateSettings: (idToken, settings) => call('adminUpdateSettings', { idToken, settings }),
+  adminWhoAmI: () => rpc('admin_who_am_i'),
+  adminOverview: () => rpc('admin_overview'),
+  adminUpdateVotingControl: (_idToken, data) =>
+    rpc('admin_update_voting_control', {
+      p_start_datetime: data.startDatetime,
+      p_end_datetime: data.endDatetime,
+      p_timezone: data.timezone
+    }),
+  adminUpdateSettings: (_idToken, settings) => rpc('admin_update_settings', { p_settings: settings }),
 
-  adminListContestants: (idToken) => call('adminListContestants', { idToken }),
-  adminSaveContestant: (idToken, data) => call('adminSaveContestant', { idToken, ...data }),
-  adminDisableContestant: (idToken, contestantId) => call('adminDisableContestant', { idToken, contestantId }),
+  adminListContestants: () => rpc('admin_list_contestants'),
+  adminSaveContestant: (_idToken, data) =>
+    rpc('admin_save_contestant', {
+      p_contestant_id: data.contestantId || null,
+      p_contestant_number: data.contestantNumber,
+      p_name: data.name,
+      p_category: data.category,
+      p_biography: data.biography,
+      p_photo_url: data.photoUrl,
+      p_status: data.status || null
+    }),
+  adminDisableContestant: (_idToken, contestantId) => rpc('admin_disable_contestant', { p_contestant_id: contestantId }),
 
-  adminVotingDaysList: (idToken) => call('adminVotingDaysList', { idToken }),
-  adminDailyResults: (idToken, votingDay) => call('adminDailyResults', { idToken, votingDay }),
-  adminReleaseFinalResults: (idToken) => call('adminReleaseFinalResults', { idToken }),
-  adminExportVotes: (idToken) => call('adminExportVotes', { idToken }),
+  adminVotingDaysList: () => rpc('admin_voting_days_list'),
+  adminDailyResults: (_idToken, votingDay) => rpc('admin_daily_results', { p_voting_day: votingDay }),
+  adminReleaseFinalResults: () => rpc('admin_release_final_results'),
+  adminExportVotes: () => rpc('admin_export_votes'),
 
-  adminListVoters: (idToken, filters) => call('adminListVoters', { idToken, filters }),
-  adminSuspiciousActivity: (idToken) => call('adminSuspiciousActivity', { idToken }),
-  adminReviewSuspicious: (idToken, timestamp, emailHash, newStatus) =>
-    call('adminReviewSuspicious', { idToken, timestamp, emailHash, newStatus }),
-  adminAuditLogs: (idToken) => call('adminAuditLogs', { idToken })
+  adminListVoters: (_idToken, filters) => rpc('admin_list_voters', { p_filters: filters || {} }),
+  adminSuspiciousActivity: () => rpc('admin_suspicious_activity'),
+  adminReviewSuspicious: (_idToken, timestamp, emailHash, newStatus) =>
+    rpc('admin_review_suspicious', { p_timestamp: timestamp, p_email_hash: emailHash, p_new_status: newStatus }),
+  adminAuditLogs: () => rpc('admin_audit_logs')
 };
 
 export { ApiError };

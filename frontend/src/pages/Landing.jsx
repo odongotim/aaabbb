@@ -9,8 +9,8 @@ export default function Landing() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.getPublicBootstrap()
-      .then(({ settings }) => setSettings(settings))
+    api.getPublicSettings()
+      .then(setSettings)
       .catch((e) => setError(e instanceof ApiError ? e.message : 'System temporarily unavailable.'));
   }, []);
 

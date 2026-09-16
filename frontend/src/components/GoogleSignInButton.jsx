@@ -1,21 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function GoogleSignInButton() {
-  const ref = useRef(null);
-  const { renderSignInButton, gsiReady, isSignedIn } = useAuth();
-
-  useEffect(() => {
-    if (gsiReady && ref.current && !isSignedIn) {
-      renderSignInButton(ref.current);
-    }
-  }, [gsiReady, isSignedIn, renderSignInButton]);
+  const { signInWithGoogle, isSignedIn, gsiReady } = useAuth();
 
   if (isSignedIn) return null;
 
   return (
     <div className="google-signin">
-      <div ref={ref} />
+      <button
+        type="button"
+        className="btn btn--secondary google-signin__button"
+        onClick={signInWithGoogle}
+        disabled={!gsiReady}
+      >
+        Sign in with Google
+      </button>
       {!gsiReady && <p className="google-signin__loading">Loading sign-in…</p>}
     </div>
   );

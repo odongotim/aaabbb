@@ -8,8 +8,8 @@ export default function Contestants() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.getPublicBootstrap()
-      .then(({ contestants }) => setContestants(contestants))
+    api.getActiveContestants()
+      .then(setContestants)
       .catch((e) => setError(e instanceof ApiError ? e.message : 'System temporarily unavailable.'));
   }, []);
 

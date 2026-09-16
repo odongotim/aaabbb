@@ -1,81 +1,64 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { supabase, supabaseConfigured } from '../lib/supabaseClient.js';
 
 const AuthContext = createContext(null);
 
-const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const STORAGE_KEY = 'lup_id_token';
-
 export function AuthProvider({ children }) {
-  const [idToken, setIdToken] = useState(() => sessionStorage.getItem(STORAGE_KEY));
-  const [profile, setProfile] = useState(null);
-  const [gsiReady, setGsiReady] = useState(false);
+  const [session, setSession] = useState(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (idToken) {
-      try {
-        const payload = JSON.parse(atob(idToken.split('.')[1]));
-        setProfile({ email: payload.email, name: payload.name, picture: payload.picture, exp: payload.exp });
-        if (payload.exp && Date.now() / 1000 > payload.exp) {
-          signOut();
-        }
-      } catch {
-        setProfile(null);
-      }
-    } else {
-      setProfile(null);
+    if (!supabaseConfigured) {
+      setReady(true);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idToken]);
-
-  const handleCredential = useCallback((response) => {
-    sessionStorage.setItem(STORAGE_KEY, response.credential);
-    setIdToken(response.credential);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setReady(true);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+    });
+    return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Initialize must complete before any renderButton() call, and child
-  // components' effects can fire before this provider's effects on mount —
-  // so initialize() happens synchronously the moment the script is
-  // detected, in the same tick that flips gsiReady, rather than in a
-  // second effect that races against consumers of gsiReady.
-  useEffect(() => {
-    const check = setInterval(() => {
-      if (window.google?.accounts?.id) {
-        clearInterval(check);
-        if (CLIENT_ID && !CLIENT_ID.includes('YOUR_GOOGLE')) {
-          window.google.accounts.id.initialize({
-            client_id: CLIENT_ID,
-            callback: handleCredential,
-            auto_select: false
-          });
-        }
-        setGsiReady(true);
-      }
-    }, 200);
-    return () => clearInterval(check);
-  }, [handleCredential]);
-
-  const renderSignInButton = useCallback((el, options = {}) => {
-    if (!window.google?.accounts?.id || !el) return;
-    window.google.accounts.id.renderButton(el, {
-      theme: 'outline',
-      size: 'large',
-      shape: 'rectangular',
-      text: 'signin_with',
-      width: 320,
-      ...options
+  const signInWithGoogle = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
     });
   }, []);
 
-  const signOut = useCallback(() => {
-    sessionStorage.removeItem(STORAGE_KEY);
-    setIdToken(null);
-    setProfile(null);
-    window.google?.accounts?.id?.disableAutoSelect?.();
+  const signOut = useCallback(async () => {
+    await supabase.auth.signOut();
+    setSession(null);
   }, []);
 
+  const profile = useMemo(() => {
+    if (!session?.user) return null;
+    const meta = session.user.user_metadata || {};
+    return {
+      email: session.user.email,
+      name: meta.full_name || meta.name || '',
+      picture: meta.avatar_url || meta.picture || '',
+      exp: session.expires_at
+    };
+  }, [session]);
+
+  // `idToken` is kept as the field name (now holding the Supabase access
+  // token) purely so existing pages/components that read it from
+  // useAuth() didn't need to change — Supabase RPC calls attach the
+  // session automatically and don't actually need this value passed in.
   const value = useMemo(
-    () => ({ idToken, profile, isSignedIn: !!idToken, gsiReady, renderSignInButton, signOut }),
-    [idToken, profile, gsiReady, renderSignInButton, signOut]
+    () => ({
+      idToken: session?.access_token || null,
+      profile,
+      isSignedIn: !!session,
+      gsiReady: ready,
+      signInWithGoogle,
+      signOut
+    }),
+    [session, profile, ready, signInWithGoogle, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

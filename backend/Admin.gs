@@ -16,7 +16,21 @@ function getSettingsMap_() {
 
 /** Public settings — safe subset only (never leaks admin-only fields). */
 function getPublicSettings_() {
-  return getPublicBootstrap_().settings;
+  var s = getSettingsMap_();
+  var votingState = getVotingStatus_();
+  return {
+    pageantName: s.pageant_name,
+    edition: s.edition,
+    theme: s.theme,
+    startDatetime: s.start_datetime,
+    endDatetime: s.end_datetime,
+    timezone: s.timezone || TIMEZONE,
+    votingStatus: votingState.status,
+    resultsReleased: String(s.results_released).toLowerCase() === 'true',
+    currentVotingDay: votingState.status !== VOTING_STATUS.NOT_STARTED
+      ? currentVotingDayNumber_(votingState.start, votingState.now)
+      : 0
+  };
 }
 
 /** ADMIN: overview statistics. */
@@ -81,7 +95,6 @@ function adminUpdateVotingControl_(idToken, payload) {
   setSetting_('end_datetime', end.toISOString());
   setSetting_('timezone', payload.timezone || TIMEZONE);
   logAudit_(admin, 'VOTING_SETTINGS_CHANGED', '', payload);
-  invalidatePublicCache_();
   return getPublicSettings_();
 }
 
@@ -104,7 +117,6 @@ function adminUpdateSettings_(idToken, payload) {
     setSetting_(key, payload[key]);
   });
   logAudit_(admin, 'SETTINGS_UPDATED', '', payload);
-  invalidatePublicCache_();
   return getPublicSettings_();
 }
 

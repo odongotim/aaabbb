@@ -14,7 +14,6 @@ var ALLOWED_ACTIONS = {
   // Public reads
   getPublicSettings: function (p) { return getPublicSettings_(); },
   getActiveContestants: function (p) { return getActiveContestants_(); },
-  getPublicBootstrap: function (p) { return getPublicBootstrap_(); },
   getContestantDetails: function (p) { return getContestantDetails_(p.contestantId); },
   getPublicFinalResults: function (p) { return getPublicFinalResults_(); },
 
@@ -82,7 +81,6 @@ function doGet(e) {
   var readOnlyGet = {
     getPublicSettings: function () { return getPublicSettings_(); },
     getActiveContestants: function () { return getActiveContestants_(); },
-    getPublicBootstrap: function () { return getPublicBootstrap_(); },
     getPublicFinalResults: function () { return getPublicFinalResults_(); }
   };
   if (!action || !readOnlyGet.hasOwnProperty(action)) {

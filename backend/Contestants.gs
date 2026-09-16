@@ -4,7 +4,12 @@
  */
 
 function getActiveContestants_() {
-  return getPublicBootstrap_().contestants;
+  var sheet = getSheet_(SHEET_NAMES.CONTESTANTS);
+  var rows = readSheetAsObjects_(sheet);
+  return rows
+    .filter(function (c) { return String(c.status).toLowerCase() === 'active'; })
+    .map(publicContestant_)
+    .sort(function (a, b) { return a.contestantNumber - b.contestantNumber; });
 }
 
 function getContestantDetails_(contestantId) {
@@ -60,7 +65,6 @@ function adminSaveContestant_(idToken, payload) {
           }
         });
         logAudit_(admin, 'CONTESTANT_UPDATED', payload.contestantId, updates);
-        invalidatePublicCache_();
         return { contestantId: payload.contestantId };
       }
     }
@@ -80,7 +84,6 @@ function adminSaveContestant_(idToken, payload) {
     updated_at: nowIso_()
   });
   logAudit_(admin, 'CONTESTANT_CREATED', newId, payload);
-  invalidatePublicCache_();
   return { contestantId: newId };
 }
 
@@ -95,7 +98,6 @@ function adminDisableContestant_(idToken, contestantId) {
       sheet.getRange(rows[i].__row, headers.indexOf('status') + 1).setValue('disabled');
       sheet.getRange(rows[i].__row, headers.indexOf('updated_at') + 1).setValue(nowIso_());
       logAudit_(admin, 'CONTESTANT_DISABLED', contestantId, {});
-      invalidatePublicCache_();
       return { contestantId: contestantId, status: 'disabled' };
     }
   }
