@@ -248,7 +248,7 @@
   gap: var(--sp-3);
 }
 .contestant-card__photo {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
 }
