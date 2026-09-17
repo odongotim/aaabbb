@@ -274,15 +274,10 @@
   font-size: var(--text-lg);
   margin: 0.15rem 0;
 }
-.contestant-card__category {
+.contestant-card__fact {
   font-size: var(--text-sm);
-  color: var(--brand-blue);
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-}
-.contestant-card__bio {
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
+  color: var(--ink);
+  margin: 0 0 0.35rem 0;
 }
 .contestant-card__actions {
   display: flex;
@@ -319,6 +314,9 @@
 .profile__category {
   color: var(--brand-blue);
   font-weight: 600;
+}
+.profile__facts {
+  margin-top: var(--sp-2);
 }
 @media (max-width: 720px) {
   .profile { grid-template-columns: 1fr; }

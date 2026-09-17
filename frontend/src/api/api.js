@@ -76,9 +76,16 @@ export const api = {
       p_contestant_number: data.contestantNumber,
       p_name: data.name,
       p_category: data.category,
-      p_biography: data.biography,
       p_photo_url: data.photoUrl,
-      p_status: data.status || null
+      p_status: data.status || null,
+      p_age: data.age === '' || data.age === null || data.age === undefined ? null : Number(data.age),
+      p_faculty: data.faculty || null,
+      p_role_model: data.roleModel || null,
+      p_hobbies: data.hobbies || null,
+      p_project: data.project || null,
+      p_tribe: data.tribe || null,
+      p_district: data.district || null,
+      p_clan: data.clan || null
     }),
   adminDisableContestant: (_idToken, contestantId) => rpc('admin_disable_contestant', { p_contestant_id: contestantId }),
 

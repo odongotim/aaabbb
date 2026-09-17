@@ -3,6 +3,20 @@ import { Link, useParams } from 'react-router-dom';
 import { api, ApiError } from '../api/api.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
+// Order they appear in on the profile page, below Category. Anything the
+// contestant record doesn't have a value for is skipped rather than
+// shown blank.
+const PROFILE_FACTS = [
+  ['Age', 'age'],
+  ['Faculty', 'faculty'],
+  ['Tribe', 'tribe'],
+  ['Clan', 'clan'],
+  ['District', 'district'],
+  ['Role Model', 'roleModel'],
+  ['Hobbies', 'hobbies'],
+  ['Project', 'project']
+];
+
 export default function ContestantProfile() {
   const { contestantId } = useParams();
   const [contestant, setContestant] = useState(null);
@@ -33,6 +47,8 @@ export default function ContestantProfile() {
     );
   }
 
+  const facts = PROFILE_FACTS.filter(([, key]) => contestant[key] != null && contestant[key] !== '');
+
   return (
     <div className="container page-section">
       <Link to="/contestants" className="back-link">&larr; Back to contestants</Link>
@@ -48,7 +64,18 @@ export default function ContestantProfile() {
           <p className="profile__number">Contestant No. {contestant.contestantNumber}</p>
           <h1>{contestant.name}</h1>
           <p className="profile__category">{contestant.category}</p>
-          <p className="profile__bio">{contestant.biography}</p>
+
+          {facts.length > 0 && (
+            <dl className="confirmation-list profile__facts">
+              {facts.map(([label, key]) => (
+                <div key={key}>
+                  <dt>{label}</dt>
+                  <dd>{contestant[key]}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
           <Link to={`/vote/${contestant.contestantId}`} className="btn btn--primary">
             Add {contestant.name} to Ballot
           </Link>

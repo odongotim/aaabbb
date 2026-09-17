@@ -14,13 +14,11 @@ export default function ContestantCard({ contestant }) {
       <div className="contestant-card__body">
         <p className="contestant-card__number">No. {contestant.contestantNumber}</p>
         <h3 className="contestant-card__name">{contestant.name}</h3>
-        <p className="contestant-card__category">{contestant.category}</p>
-        {contestant.biography && (
-          <p className="contestant-card__bio">
-            {contestant.biography.length > 110
-              ? contestant.biography.slice(0, 110).trim() + '…'
-              : contestant.biography}
-          </p>
+        {contestant.faculty && (
+          <p className="contestant-card__fact"><strong>Faculty:</strong> {contestant.faculty}</p>
+        )}
+        {contestant.age != null && (
+          <p className="contestant-card__fact"><strong>Age:</strong> {contestant.age}</p>
         )}
         <div className="contestant-card__actions">
           <Link to={`/contestants/${contestant.contestantId}`} className="btn btn--secondary">
