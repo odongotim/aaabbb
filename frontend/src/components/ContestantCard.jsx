@@ -17,8 +17,8 @@ export default function ContestantCard({ contestant }) {
         {contestant.faculty && (
           <p className="contestant-card__fact"><strong>Faculty:</strong> {contestant.faculty}</p>
         )}
-        {contestant.age != null && (
-          <p className="contestant-card__fact"><strong>Age:</strong> {contestant.age}</p>
+        {contestant.yearOfStudy && (
+          <p className="contestant-card__fact"><strong>Year:</strong> {contestant.yearOfStudy}</p>
         )}
         <div className="contestant-card__actions">
           <Link to={`/contestants/${contestant.contestantId}`} className="btn btn--secondary">

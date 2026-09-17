@@ -3,18 +3,21 @@ import { Link, useParams } from 'react-router-dom';
 import { api, ApiError } from '../api/api.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
-// Order they appear in on the profile page, below Category. Anything the
-// contestant record doesn't have a value for is skipped rather than
-// shown blank.
+// Short facts shown as labeled rows, in this order. Anything the
+// contestant record doesn't have a value for is skipped.
 const PROFILE_FACTS = [
-  ['Age', 'age'],
   ['Faculty', 'faculty'],
-  ['Tribe', 'tribe'],
-  ['Clan', 'clan'],
-  ['District', 'district'],
-  ['Role Model', 'roleModel'],
-  ['Hobbies', 'hobbies'],
-  ['Project', 'project']
+  ['Year of Study', 'yearOfStudy'],
+  ['Study Programme', 'studyProgramme']
+];
+
+// Longer, paragraph-style answers — each gets its own heading below the
+// facts, in this order. Skipped the same way if left blank.
+const PROFILE_STATEMENTS = [
+  ['My Passion', 'passion'],
+  ['What I Believe In', 'beliefs'],
+  ['My Platform Intention', 'platformIntention'],
+  ['Personal Statement', 'personalStatement']
 ];
 
 export default function ContestantProfile() {
@@ -47,7 +50,8 @@ export default function ContestantProfile() {
     );
   }
 
-  const facts = PROFILE_FACTS.filter(([, key]) => contestant[key] != null && contestant[key] !== '');
+  const facts = PROFILE_FACTS.filter(([, key]) => contestant[key]);
+  const statements = PROFILE_STATEMENTS.filter(([, key]) => contestant[key]);
 
   return (
     <div className="container page-section">
@@ -75,6 +79,13 @@ export default function ContestantProfile() {
               ))}
             </dl>
           )}
+
+          {statements.map(([label, key]) => (
+            <div className="profile__statement" key={key}>
+              <h3>{label}</h3>
+              <p>{contestant[key]}</p>
+            </div>
+          ))}
 
           <Link to={`/vote/${contestant.contestantId}`} className="btn btn--primary">
             Add {contestant.name} to Ballot

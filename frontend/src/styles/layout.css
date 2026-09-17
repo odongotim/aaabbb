@@ -318,6 +318,16 @@
 .profile__facts {
   margin-top: var(--sp-2);
 }
+.profile__statement {
+  margin-top: var(--sp-3);
+}
+.profile__statement h3 {
+  font-size: var(--text-base);
+  margin-bottom: 0.25rem;
+}
+.profile__statement p {
+  color: var(--ink-soft);
+}
 @media (max-width: 720px) {
   .profile { grid-template-columns: 1fr; }
 }

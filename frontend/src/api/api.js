@@ -78,14 +78,13 @@ export const api = {
       p_category: data.category,
       p_photo_url: data.photoUrl,
       p_status: data.status || null,
-      p_age: data.age === '' || data.age === null || data.age === undefined ? null : Number(data.age),
       p_faculty: data.faculty || null,
-      p_role_model: data.roleModel || null,
-      p_hobbies: data.hobbies || null,
-      p_project: data.project || null,
-      p_tribe: data.tribe || null,
-      p_district: data.district || null,
-      p_clan: data.clan || null
+      p_year_of_study: data.yearOfStudy || null,
+      p_study_programme: data.studyProgramme || null,
+      p_passion: data.passion || null,
+      p_beliefs: data.beliefs || null,
+      p_platform_intention: data.platformIntention || null,
+      p_personal_statement: data.personalStatement || null
     }),
   adminDisableContestant: (_idToken, contestantId) => rpc('admin_disable_contestant', { p_contestant_id: contestantId }),
 

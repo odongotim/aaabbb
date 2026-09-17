@@ -8,14 +8,13 @@ const EMPTY_FORM = {
   contestantNumber: '',
   name: '',
   category: 'Female',
-  age: '',
   faculty: '',
-  tribe: '',
-  clan: '',
-  district: '',
-  roleModel: '',
-  hobbies: '',
-  project: '',
+  yearOfStudy: '',
+  studyProgramme: '',
+  passion: '',
+  beliefs: '',
+  platformIntention: '',
+  personalStatement: '',
   photoUrl: ''
 };
 
@@ -27,14 +26,13 @@ function toFormState(c) {
     contestantNumber: c.contestantNumber ?? '',
     name: c.name ?? '',
     category: c.category ?? 'Female',
-    age: c.age ?? '',
     faculty: c.faculty ?? '',
-    tribe: c.tribe ?? '',
-    clan: c.clan ?? '',
-    district: c.district ?? '',
-    roleModel: c.roleModel ?? '',
-    hobbies: c.hobbies ?? '',
-    project: c.project ?? '',
+    yearOfStudy: c.yearOfStudy ?? '',
+    studyProgramme: c.studyProgramme ?? '',
+    passion: c.passion ?? '',
+    beliefs: c.beliefs ?? '',
+    platformIntention: c.platformIntention ?? '',
+    personalStatement: c.personalStatement ?? '',
     photoUrl: c.photoUrl ?? ''
   };
 }
@@ -102,10 +100,6 @@ export default function ContestantsAdmin() {
               <option value="Male">Male</option>
             </select>
           </div>
-          <div className="field">
-            <label>Age</label>
-            <input type="number" min="16" max="60" {...field('age')} />
-          </div>
         </div>
 
         <div className="field">
@@ -119,33 +113,31 @@ export default function ContestantsAdmin() {
             <input type="text" {...field('faculty')} placeholder="Faculty of…" />
           </div>
           <div className="field">
-            <label>District</label>
-            <input type="text" {...field('district')} />
-          </div>
-        </div>
-
-        <div className="admin-form__row">
-          <div className="field">
-            <label>Tribe</label>
-            <input type="text" {...field('tribe')} />
-          </div>
-          <div className="field">
-            <label>Clan</label>
-            <input type="text" {...field('clan')} />
+            <label>Year of Study</label>
+            <input type="text" {...field('yearOfStudy')} placeholder="e.g. Year Two" />
           </div>
         </div>
 
         <div className="field">
-          <label>Role model</label>
-          <input type="text" {...field('roleModel')} />
+          <label>Study Programme</label>
+          <input type="text" {...field('studyProgramme')} placeholder="e.g. Bachelor of Software Engineering" />
+        </div>
+
+        <div className="field">
+          <label>My Passion</label>
+          <textarea rows={3} {...field('passion')} />
         </div>
         <div className="field">
-          <label>Hobbies</label>
-          <input type="text" {...field('hobbies')} placeholder="Dancing, singing, acting…" />
+          <label>What I Believe In</label>
+          <textarea rows={3} {...field('beliefs')} />
         </div>
         <div className="field">
-          <label>Project</label>
-          <input type="text" {...field('project')} placeholder="e.g. Mental wellbeing" />
+          <label>My Platform Intention</label>
+          <textarea rows={3} {...field('platformIntention')} />
+        </div>
+        <div className="field">
+          <label>Personal Statement</label>
+          <textarea rows={4} {...field('personalStatement')} />
         </div>
 
         <div className="field">
@@ -169,8 +161,8 @@ export default function ContestantsAdmin() {
             <th scope="col">No.</th>
             <th scope="col">Name</th>
             <th scope="col">Category</th>
-            <th scope="col">Age</th>
             <th scope="col">Faculty</th>
+            <th scope="col">Year</th>
             <th scope="col">Status</th>
             <th scope="col">Actions</th>
           </tr>
@@ -181,8 +173,8 @@ export default function ContestantsAdmin() {
               <td>{c.contestantNumber}</td>
               <td>{c.name}</td>
               <td>{c.category}</td>
-              <td>{c.age ?? '—'}</td>
               <td>{c.faculty || '—'}</td>
+              <td>{c.yearOfStudy || '—'}</td>
               <td>{c.status}</td>
               <td>
                 <button className="link-button" onClick={() => setForm(toFormState(c))}>Edit</button>
