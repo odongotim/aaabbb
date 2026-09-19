@@ -330,6 +330,7 @@
 }
 @media (max-width: 720px) {
   .profile { grid-template-columns: 1fr; }
+  .profile__photo { aspect-ratio: 4 / 3; }
 }
 
 /* ---------- Vote page ---------- */
@@ -426,8 +427,15 @@
 .confirmation-list div {
   display: flex;
   justify-content: space-between;
+  gap: var(--sp-2);
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--line);
+}
+@media (max-width: 480px) {
+  .confirmation-list div {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
 }
 .confirmation-list dt {
   color: var(--ink-faint);
