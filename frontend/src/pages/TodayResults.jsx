@@ -45,11 +45,11 @@ export default function TodayResults() {
 
       <div className="daily-results-grid">
         <div className="card">
-          <h2>Female</h2>
+          <h2>Miss Lira University</h2>
           <PieChart data={byCategory.Female.map((r) => ({ label: r.contestantName, value: r.voteCount }))} />
         </div>
         <div className="card">
-          <h2>Male</h2>
+          <h2>Mr.Lira University</h2>
           <PieChart data={byCategory.Male.map((r) => ({ label: r.contestantName, value: r.voteCount }))} />
         </div>
       </div>
