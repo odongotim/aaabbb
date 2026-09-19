@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext.jsx';
 import { api, ApiError } from '../../../api/api.js';
 import ErrorMessage from '../../../components/ErrorMessage.jsx';
+import PhotoUploader from '../../../components/PhotoUploader.jsx';
 
 const EMPTY_FORM = {
   contestantId: null,
@@ -141,8 +142,8 @@ export default function ContestantsAdmin() {
         </div>
 
         <div className="field">
-          <label>Photo URL</label>
-          <input type="url" {...field('photoUrl')} placeholder="https://…" />
+          <label>Photo</label>
+          <PhotoUploader value={form.photoUrl} onChange={(url) => setForm({ ...form, photoUrl: url })} />
         </div>
 
         <div className="admin-form__actions">
