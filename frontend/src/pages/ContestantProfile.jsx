@@ -70,7 +70,7 @@ export default function ContestantProfile() {
           <p className="profile__category">{contestant.category}</p>
 
           {facts.length > 0 && (
-            <dl className="confirmation-list profile__facts">
+            <dl className="profile__facts">
               {facts.map(([label, key]) => (
                 <div key={key}>
                   <dt>{label}</dt>
