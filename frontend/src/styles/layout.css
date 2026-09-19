@@ -318,6 +318,20 @@
 .profile__facts {
   margin-top: var(--sp-2);
 }
+.profile__facts div {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.profile__facts dt {
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  margin-bottom: 0.15rem;
+}
+.profile__facts dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: break-word;
+}
 .profile__statement {
   margin-top: var(--sp-3);
 }
