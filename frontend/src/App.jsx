@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import ProtectedAdminRoute from './components/ProtectedAdminRoute.jsx';
 
 import Landing from './pages/Landing.jsx';
 import Contestants from './pages/Contestants.jsx';
@@ -13,14 +12,9 @@ import Results from './pages/Results.jsx';
 import TodayResults from './pages/TodayResults.jsx';
 import NotFound from './pages/NotFound.jsx';
 
-import AdminLogin from './pages/1admin/AdminLogin.jsx';
-import AdminDashboard from './pages/1admin/AdminDashboard.jsx';
-
 export default function App() {
   return (
     <Routes>
-      <Route path="/1admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
-      <Route path="/1admin" element={<PublicLayout><1AdminLogin /></PublicLayout>} />
       <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
       <Route path="/contestants" element={<PublicLayout><Contestants /></PublicLayout>} />
       <Route path="/contestants/:contestantId" element={<PublicLayout><ContestantProfile /></PublicLayout>} />
