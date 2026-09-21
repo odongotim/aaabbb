@@ -13,14 +13,14 @@ import Results from './pages/Results.jsx';
 import TodayResults from './pages/TodayResults.jsx';
 import NotFound from './pages/NotFound.jsx';
 
-import AdminLogin from './pages/admin/AdminLogin.jsx';
-import AdminDashboard from './pages/admin/AdminDashboard.jsx';
+import AdminLogin from './pages/1admin/AdminLogin.jsx';
+import AdminDashboard from './pages/1admin/AdminDashboard.jsx';
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
-      <Route path="/admin" element={<PublicLayout><AdminLogin /></PublicLayout>} />
+      <Route path="/1admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+      <Route path="/1admin" element={<PublicLayout><AdminLogin /></PublicLayout>} />
       <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
       <Route path="/contestants" element={<PublicLayout><Contestants /></PublicLayout>} />
       <Route path="/contestants/:contestantId" element={<PublicLayout><ContestantProfile /></PublicLayout>} />
