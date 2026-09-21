@@ -20,7 +20,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/1admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
-      <Route path="/1admin" element={<PublicLayout><AdminLogin /></PublicLayout>} />
+      <Route path="/1admin" element={<PublicLayout><1AdminLogin /></PublicLayout>} />
       <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
       <Route path="/contestants" element={<PublicLayout><Contestants /></PublicLayout>} />
       <Route path="/contestants/:contestantId" element={<PublicLayout><ContestantProfile /></PublicLayout>} />
