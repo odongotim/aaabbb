@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+{/*import React, { useEffect, useState } from 'react';
 import { api, ApiError } from '../api/api.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import PieChart from '../components/PieChart.jsx';
@@ -56,3 +56,4 @@ export default function TodayResults() {
     </div>
   );
 }
+*/}
