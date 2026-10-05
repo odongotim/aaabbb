@@ -37,11 +37,11 @@ export default function TodayResults() {
   return (
     <div className="container page-section">
       <h1>Today's Votes</h1>
-  {/*<p className="page-intro">
-        Live distribution for {results.votingDay} — {results.totalVotes} vote{results.totalVotes === 1 ? '' : 's'} from{' '}
-        {results.uniqueVoters} voter{results.uniqueVoters === 1 ? '' : 's'} so far today. Standings reset each new voting day
+  <p className="page-intro">
+        Live distribution for {results.votingDay} — {results.totalVotes} vote{results.totalVotes === 1 ? '' : 's'} {/*from{' '}
+        {results.uniqueVoters} voter{results.uniqueVoters === 1 ? '' : 's'} */}so far today. Standings reset each new voting day
         and are separate from the official final results.
-      </p>*/}
+      </p>
 
       <div className="daily-results-grid">
         <div className="card">
