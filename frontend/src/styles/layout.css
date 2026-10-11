@@ -741,3 +741,117 @@
   border-radius: 2px;
   flex-shrink: 0;
 }
+
+/* ---------- Final results (pie charts + tables) ---------- */
+.winner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.winner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--brand-yellow);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.winner-card__label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.winner-card__name {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.winner-card__votes {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.final-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: var(--sp-3);
+  align-items: start;
+}
+.final-category {
+  min-width: 0;
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.final-category .category-section__title {
+  margin-bottom: 0;
+}
+.final-category__table {
+  font-variant-numeric: tabular-nums;
+}
+.final-category__table .num {
+  text-align: right;
+}
+.final-category__table td.num {
+  white-space: nowrap;
+}
+.final-category__table tr.is-winner td {
+  background: #FFFBD1;
+  font-weight: 600;
+}
+.final-category__table tfoot td {
+  background: var(--paper);
+  font-weight: 700;
+  border-top: 2px solid var(--brand-black);
+  border-bottom: none;
+}
+.winner-tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  background: var(--brand-black);
+  color: var(--brand-yellow);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+  vertical-align: middle;
+}
+@media (max-width: 560px) {
+  .final-results-grid { grid-template-columns: minmax(0, 1fr); }
+  .final-category { padding: var(--sp-2); }
+  .final-category__table th,
+  .final-category__table td {
+    padding: 0.55rem 0.45rem;
+    font-size: var(--text-xs);
+  }
+}
+
+/* Keep side gutters on pages that combine .container with .page-section (the
+   vertical-only padding on .page-section otherwise removes them on phones). */
+.container.page-section {
+  padding-left: var(--sp-3);
+  padding-right: var(--sp-3);
+}
+@media (max-width: 640px) {
+  .container.page-section {
+    padding-left: var(--sp-2);
+    padding-right: var(--sp-2);
+  }
+}
+@media (max-width: 380px) {
+  .final-category__table th,
+  .final-category__table td {
+    padding: 0.5rem 0.3rem;
+  }
+}
